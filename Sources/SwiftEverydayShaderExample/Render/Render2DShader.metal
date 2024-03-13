@@ -2,29 +2,29 @@
 
 using namespace metal;
 
-struct VertexInputItem {
+struct Vertex2DInputItem {
     float2 position;
     float3 color;
 };
 
-struct FragmentInputItem {
+struct Fragment2DInputItem {
     float4 position [[position]];
     float3 color;
 };
 
-vertex FragmentInputItem spriteVertexShader(
+vertex Fragment2DInputItem render2DVertexShader(
     uint itemID [[ vertex_id ]],
-    constant VertexInputItem *input [[ buffer(0) ]]
+    constant Vertex2DInputItem *input [[ buffer(0) ]]
 ) {
-    VertexInputItem current = input[itemID];
-    FragmentInputItem out;
+    Vertex2DInputItem current = input[itemID];
+    Fragment2DInputItem out;
     out.color = current.color;
     out.position = float4(current.position.x, current.position.y, 0, 1);
     return out;
 }
 
-fragment float4 spriteFragmentShader(
-    FragmentInputItem in [[stage_in]]
+fragment float4 render2DFragmentShader(
+    Fragment2DInputItem in [[stage_in]]
 ) {
     return float4(in.color, 1);
 }
