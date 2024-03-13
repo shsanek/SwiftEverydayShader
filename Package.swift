@@ -65,8 +65,8 @@ extension Package.Dependency {
             switch swiftEverydaySource {
             case .version(let version):
                 return .package(url: "https://github.com/shsanek/\(name).git", exact: version)
-            case .branch(let name):
-                return .package(url: "https://github.com/shsanek/\(name).git", branch: name)
+            case .branch(let branch):
+                return .package(url: "https://github.com/shsanek/\(name).git", branch: branch)
             }
         }
     }
