@@ -1,0 +1,18 @@
+@Shader
+struct Function {
+    @Buffer(0) var index: Int = Self.index
+}
+---
+struct Function {
+    var index: Int = Self.index {
+        set {
+            _indexBufferContainer.values = [newValue]
+        }
+        get {
+            _indexBufferContainer.values[0]
+        }
+    }
+
+    private var _indexBufferContainer: BufferContainer<Int> = .init(Self.index)
+}
+

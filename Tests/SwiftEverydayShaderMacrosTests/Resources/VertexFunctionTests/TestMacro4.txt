@@ -1,0 +1,32 @@
+@Shader
+final class SpriteVertexFunction: IVertexFunction {
+    @IndexBuffer var count: [UInt32]
+}
+---
+final class SpriteVertexFunction: IVertexFunction {
+    var count: [UInt32] {
+        set {
+            _countBufferContainer.values = newValue
+        }
+        get {
+            _countBufferContainer.values
+        }
+    }
+
+
+    private var _countBufferContainer: BufferContainer<UInt32> = .init()
+
+    var _readyForRendering: Bool {
+        return count.count > 0
+    }
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+
+        encoder.drawIndexedPrimitives(
+            type: primitive,
+            indexCount: count.count,
+            indexType: .uint32,
+            indexBuffer: try _countBufferContainer.getBuffer(for: device).noOptional(),
+            indexBufferOffset: 0
+        )
+    }
+}

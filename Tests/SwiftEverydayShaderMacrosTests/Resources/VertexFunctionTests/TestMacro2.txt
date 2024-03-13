@@ -1,0 +1,25 @@
+@Shader
+final class VertexFunction: IVertexFunction {
+    @VertexBuffer(0) var items: [VertexItem]
+}
+---
+final class VertexFunction: IVertexFunction {
+    var items: [VertexItem] {
+        set {
+            _itemsBufferContainer.values = newValue
+        }
+        get {
+            _itemsBufferContainer.values
+        }
+    }
+
+    private var _itemsBufferContainer: BufferContainer<VertexItem> = .init()
+
+    var _readyForRendering: Bool {
+        return items.count > 0
+    }
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+        try encoder.setVertexBuffer(_itemsBufferContainer.getBuffer(for: device), offset: 0, index: 0)
+        encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: items.count)
+    }
+}

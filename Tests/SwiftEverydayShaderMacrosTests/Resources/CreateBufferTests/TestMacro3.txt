@@ -1,0 +1,19 @@
+@Shader
+struct Function {
+    @Buffer(0) var index: Int?
+}
+---
+struct Function {
+    var index: Int? {
+        set {
+            _indexBufferContainer.values = newValue.flatMap {
+                [$0]
+            } ?? []
+        }
+        get {
+            _indexBufferContainer.values.first
+        }
+    }
+
+    private var _indexBufferContainer: BufferContainer<Int> = .init()
+}

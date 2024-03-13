@@ -1,0 +1,14 @@
+@Shader
+final class VertexFunction: IVertexFunction {
+    @VertexCount var count: Int = 0
+}
+---
+final class VertexFunction: IVertexFunction {
+    @VertexCount var count: Int = 0
+    var _readyForRendering: Bool {
+        return count > 0
+    }
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+        encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: count)
+    }
+}

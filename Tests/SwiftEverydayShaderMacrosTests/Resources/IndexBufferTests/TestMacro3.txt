@@ -1,0 +1,31 @@
+@Shader
+struct Function: IVertexFunction, IFragmentFunction {
+    @VertexCount var count: Int = 0
+    @Buffer(vertexIndex: 1) var index: [Int] = []
+}
+---
+struct Function: IVertexFunction, IFragmentFunction {
+    @VertexCount var count: Int = 0
+    var index: [Int] = [] {
+        set {
+            _indexBufferContainer.values = newValue
+        }
+        get {
+            _indexBufferContainer.values
+        }
+    }
+
+    private var _indexBufferContainer: BufferContainer<Int> = .init([])
+
+    var _readyForRendering: Bool {
+        return count > 0
+    }
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+        try encoder.setVertexBuffer(_indexBufferContainer.getBuffer(for: device), offset: 0, index: 1)
+        encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: count)
+    }
+
+    func _prepareFragment(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
+    }
+}
+
