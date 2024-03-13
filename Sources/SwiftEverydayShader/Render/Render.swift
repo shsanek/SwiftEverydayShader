@@ -15,7 +15,7 @@ final class Render {
         drawable: CAMetalDrawable?,
         descriptor: MTLRenderPassDescriptor,
         size: vector_float2,
-        pipelines: ValueContainer<[IRenderPipeline]>
+        task: RenderTask
     ) throws {
         let depthDescriptor = MTLDepthStencilDescriptor()
         depthDescriptor.depthCompareFunction = .lessEqual
@@ -52,7 +52,7 @@ final class Render {
 
         var outputError: Error?
         do {
-            try pipelines.wrappedValue.forEach({ try $0.render(encoder: encoder, device: device) })
+            try task.pipelines.wrappedValue.forEach({ try $0.render(encoder: encoder, device: device) })
         }
         catch {
             outputError = error

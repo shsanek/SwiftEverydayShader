@@ -2,25 +2,20 @@ import MetalKit
 import simd
 import SwiftEverydayUtils
 
-public protocol IViewRenderLoop {
-    func render(size: vector_float2, render: (ValueContainer<[IRenderPipeline]>) throws -> Void) throws
-}
-
 #if canImport(UIKit)
 import UIKit
 
 public class MetalView: MTKView, MTKViewDelegate {
-    private var render: Render?
     private var size: CGSize = .init(width: 100, height: 100)
-    private let loop: IViewRenderLoop
+    public let renderQueue: ViewRenderQueue
 
-    public init(loop: IViewRenderLoop) {
-        self.loop = loop
-        super.init(frame: .zero, device: MTLCreateSystemDefaultDevice())
-        guard let defaultDevice = device else {
-            fatalError("Device loading error")
+    public init(device: MTLDevice? = nil) throws {
+        let device = device ?? MTLCreateSystemDefaultDevice()
+        guard let device = device else {
+            throw "Device loading error"
         }
-        render = Render(device: defaultDevice)
+        renderQueue = .init(render: Render(device: device))
+        super.init(frame: .zero, device: device)
         colorPixelFormat = .bgra8Unorm_srgb
         depthStencilPixelFormat = .depth32Float
         clearDepth = 1
@@ -44,10 +39,7 @@ public class MetalView: MTKView, MTKViewDelegate {
             else {
                 return
             }
-            try loop.render(size: size) { container in
-                try render?.metalRender(drawable: drawable, descriptor: descriptor, size: size, pipelines: container)
-            }
-
+            try renderQueue?.metalRender(drawable: drawable, descriptor: descriptor, size: size)
         }
         catch {
             assertionFailure("\(error)")
@@ -61,17 +53,16 @@ public class MetalView: MTKView, MTKViewDelegate {
 import Cocoa
 
 public class MetalView: MTKView, MTKViewDelegate {
-    private var render: Render?
     private var size: CGSize = .init(width: 100, height: 100)
-    private let loop: IViewRenderLoop
+    public let renderQueue: ViewRenderQueue
 
-    public init(loop: IViewRenderLoop) {
-        self.loop = loop
-        super.init(frame: .zero, device: MTLCreateSystemDefaultDevice())
-        guard let defaultDevice = device else {
-            fatalError("Device loading error")
+    public init(device: MTLDevice? = nil) throws {
+        let device = device ?? MTLCreateSystemDefaultDevice()
+        guard let device = device else {
+            throw "Device loading error"
         }
-        render = Render(device: defaultDevice)
+        renderQueue = .init(render: Render(device: device))
+        super.init(frame: .zero, device: device)
         colorPixelFormat = .bgra8Unorm_srgb
         depthStencilPixelFormat = .depth32Float
         clearDepth = 1
@@ -95,10 +86,7 @@ public class MetalView: MTKView, MTKViewDelegate {
             else {
                 return
             }
-            try loop.render(size: size) { container in
-                try render?.metalRender(drawable: drawable, descriptor: descriptor, size: size, pipelines: container)
-            }
-
+            try renderQueue.metalRender(drawable: drawable, descriptor: descriptor, size: size)
         }
         catch {
             assertionFailure("\(error)")

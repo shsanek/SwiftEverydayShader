@@ -4,11 +4,8 @@ import simd
 
 class BaseExample {
     @ValueContainer var pipelines: [IRenderPipeline] = []
-    fileprivate var isLoaded: Bool = false
-    fileprivate var pipelinesContainer: ValueContainer<[IRenderPipeline]> {
-        get {
-            _pipelines
-        }
+    var pipelinesContainer: ValueContainer<[IRenderPipeline]> {
+        _pipelines
     }
     let name: String
 
@@ -21,29 +18,11 @@ class BaseExample {
 
 protocol IExample {
     var name: String { get }
-    func loop(size: vector_float2) throws
-    func load(size: vector_float2) throws
-    func render(size: vector_float2, render: (ValueContainer<[IRenderPipeline]>) throws -> Void) throws
+    func loop(size: vector_float2, queue: IRenderQueue) throws
+    func load(size: vector_float2, queue: IRenderQueue) throws
 }
 
 extension IExample {
-    func loop(size: vector_float2) { }
-}
-
-extension IExample where Self: BaseExample {
-    private func loadIfNeeded(size: vector_float2) throws {
-        guard !isLoaded else {
-            return
-        }
-        defer {
-            isLoaded = true
-        }
-        try load(size: size)
-    }
-
-    func render(size: vector_float2, render: (ValueContainer<[IRenderPipeline]>) throws -> Void) throws {
-        try loadIfNeeded(size: size)
-        try loop(size: size)
-        try render(pipelinesContainer)
-    }
+    func loop(size: vector_float2, queue: IRenderQueue) throws { }
+    func load(size: vector_float2, queue: IRenderQueue) throws { }
 }

@@ -5,7 +5,8 @@ import SwiftEverydayShader
 struct MainView: View {
     @State var currentExample: IExample? = nil
 
-    let renderLoop = MainRenderLoop()
+    let renderLoop: MainRenderLoop
+    let metalView: MetalView
 
     let examples: [IExample]
 
@@ -22,7 +23,7 @@ struct MainView: View {
         } detail: {
             if currentExample != nil {
                 SwiftUIView {
-                    MetalView(loop: renderLoop)
+                    metalView
                 }
             } else {
                 Text("Select example")
