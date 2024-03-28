@@ -4,7 +4,6 @@ import SwiftEverydayShader
 
 struct MainView: View {
     @State var currentExample: IExample? = nil
-
     let renderLoop: MainRenderLoop
     let metalView: MetalView
 

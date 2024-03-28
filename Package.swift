@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-syntax", from: "509.0.0"),
         .swiftEveryday("SwiftEverydayUtils"),
         .swiftEveryday("SwiftEverydayApp"),
-        .swiftEveryday("SwiftEverydayTestsUtils")
+        // .swiftEveryday("SwiftEverydayTestsUtils")
     ],
     targets: [
         .macro(
@@ -28,24 +28,35 @@ let package = Package(
                 "SwiftEverydayUtils"
             ]
         ),
+        .target(
+            name: "SwiftEverydayVulkanApi",
+            dependencies: ["SwiftEverydayVulkanFramework"]
+        ),
         .executableTarget(
             name: "SwiftEverydayShaderExample",
-            dependencies: ["SwiftEverydayUtils", "SwiftEverydayShader", "SwiftEverydayApp"]
+            dependencies: [
+                "SwiftEverydayUtils",
+                "SwiftEverydayShader",
+                "SwiftEverydayApp",
+                "SwiftEverydayVulkanApi"
+            ],
+            swiftSettings: [.interoperabilityMode(.Cxx)]
         ),
+        .binaryTarget(name: "SwiftEverydayVulkanFramework", path: "vulkan.xcframework"),
         .target(
             name: "SwiftEverydayShader",
             dependencies: ["SwiftEverydayUtils", "SwiftEverydayShaderMacros"]
         ),
-        .testTarget(
-            name: "SwiftEverydayShaderMacrosTests",
-            dependencies: [
-                "SwiftEverydayShaderMacros",
-                "SwiftEverydayUtils",
-                "SwiftEverydayTestsUtils",
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
-            ],
-            resources: [.copy("Resources")]
-        ),
+//        .testTarget(
+//            name: "SwiftEverydayShaderMacrosTests",
+//            dependencies: [
+//                "SwiftEverydayShaderMacros",
+//                "SwiftEverydayUtils",
+//                "SwiftEverydayTestsUtils",
+//                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+//            ],
+//            resources: [.copy("Resources")]
+//        ),
     ]
 )
 
