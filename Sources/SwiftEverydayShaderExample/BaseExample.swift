@@ -12,8 +12,6 @@ class BaseExample {
     init(name: String? = nil) {
         self.name = name ?? "\(Self.self)"
     }
-
-    func loop(size: vector_float2) throws {}
 }
 
 protocol IExample {

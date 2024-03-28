@@ -4,7 +4,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftEverydayUtils
 
-public struct BufferMacro: AccessorMacro {
+public struct TextureMacro: AccessorMacro {
     public static func expansion(
       of node: AttributeSyntax,
       providingAccessorsOf declaration: some DeclSyntaxProtocol,
@@ -12,32 +12,17 @@ public struct BufferMacro: AccessorMacro {
     ) throws -> [AccessorDeclSyntax] {
         let variable = try DeclarationVariable.make(declaration.as(VariableDeclSyntax.self))
         let containerName = containerName(for: variable)
+        guard variable.type.type == "ITexture" && !variable.type.isArray else {
+            throw "explicitly specify the type ITexture or ITexture"
+        }
         let block: String = {
-            if variable.type.isArray && variable.type.isOptional {
+            if variable.type.isOptional {
                 return """
                 set {
                     \(containerName).values = newValue ?? []
                 }
                 get {
                     \(containerName).values.isEmpty ? nil : \(containerName).values
-                }
-                """
-            } else if variable.type.isOptional  {
-                return """
-                set {
-                    \(containerName).values = newValue.flatMap { [$0] } ?? []
-                }
-                get {
-                    \(containerName).values.first
-                }
-                """
-            } else if variable.type.isArray {
-                return """
-                set {
-                    \(containerName).values = newValue
-                }
-                get {
-                    \(containerName).values
                 }
                 """
             } else {
@@ -54,3 +39,4 @@ public struct BufferMacro: AccessorMacro {
         return ["\(raw: block)"]
     }
 }
+

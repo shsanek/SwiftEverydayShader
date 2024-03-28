@@ -8,13 +8,16 @@ func containerName(for variable: DeclarationVariable) -> String {
     return "_\(variable.identifier)BufferContainer"
 }
 
+func textureName(for variable: DeclarationVariable) -> String {
+    return "_\(variable.identifier)TextureContainer"
+}
+
 public struct ShaderMacro: MemberMacro {
     enum ShaderType {
         static let vertex = "IVertexFunction"
         static let fragment = "IFragmentFunction"
         static let rootVertex = "IRootVertexFunction"
         static let rootFragment = "IRootFragmentFunction"
-
     }
 
     public static func expansion(
