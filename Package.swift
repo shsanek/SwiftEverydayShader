@@ -30,7 +30,8 @@ let package = Package(
         ),
         .executableTarget(
             name: "SwiftEverydayShaderExample",
-            dependencies: ["SwiftEverydayUtils", "SwiftEverydayShader", "SwiftEverydayApp"]
+            dependencies: ["SwiftEverydayUtils", "SwiftEverydayShader", "SwiftEverydayApp"],
+            resources: [.copy("Resources")]
         ),
         .target(
             name: "SwiftEverydayShader",

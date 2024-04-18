@@ -23,7 +23,8 @@ final class MainRenderLoop: IRenderQueueDelegate {
 }
 
 let examples: [IExample] = [
-    Render2DExample()
+    Render2DExample(),
+    TextureExample()
 ]
 
 let metalView: MetalView = try .init()

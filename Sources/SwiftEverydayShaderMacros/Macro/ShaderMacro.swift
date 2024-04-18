@@ -8,10 +8,6 @@ func containerName(for variable: DeclarationVariable) -> String {
     return "_\(variable.identifier)BufferContainer"
 }
 
-func textureName(for variable: DeclarationVariable) -> String {
-    return "_\(variable.identifier)TextureContainer"
-}
-
 public struct ShaderMacro: MemberMacro {
     enum ShaderType {
         static let vertex = "IVertexFunction"
@@ -33,7 +29,8 @@ public struct ShaderMacro: MemberMacro {
             $0.attributes.contains {
                 $0.name == "Buffer" ||
                 $0.name == "IndexBuffer" ||
-                $0.name == "VertexBuffer"
+                $0.name == "VertexBuffer" ||
+                $0.name == "TextureBuffer"
             }
         })
 
@@ -49,7 +46,7 @@ public struct ShaderMacro: MemberMacro {
         let isFragmentShader = protocols.contains(where: { value in [ShaderType.fragment, ShaderType.rootFragment].contains(value) })
 
 
-        let containers = variables.map({ makeBufferContainer($0) })
+        let containers = variables.filter({ $0.attributes.contains(where: { $0.name != "TextureBuffer" }) }).map({ makeBufferContainer($0) })
 
         var functions: [DeclSyntax] = []
         if isVertexShader {
@@ -100,7 +97,7 @@ public struct ShaderMacro: MemberMacro {
 
     static func fragmentFunctionComponent(_ variable: DeclarationVariable) throws -> String {
         guard
-            let buffer = variable.attributes.first(where: { $0.name == "Buffer" || $0.name == "VertexBuffer" }),
+            let buffer = variable.attributes.first(where: { $0.name == "Buffer" || $0.name == "VertexBuffer" || $0.name == "TextureBuffer" }),
             let index = buffer.parameters.last(where: { $0.label == nil || $0.label == "fragmentIndex" })
         else {
             return ""
@@ -108,15 +105,23 @@ public struct ShaderMacro: MemberMacro {
         if buffer.name == "VertexBuffer" && index.label == nil {
             return ""
         }
+        if buffer.name == "TextureBuffer" {
+            let optional = variable.type.isOptional ? "?" : ""
+            return "try encoder.setFragmentTexture(\(variable.identifier)\(optional).getTexture(for: device) , index: \(index.expression))"
+        }
         return "try encoder.setFragmentBuffer(\(containerName(for: variable)).getBuffer(for: device), offset: 0, index: \(index.expression))"
     }
 
     static func vertexFunctionComponent(_ variable: DeclarationVariable) throws -> String {
         guard
-            let buffer = variable.attributes.first(where: { $0.name == "Buffer" || $0.name == "VertexBuffer" }),
+            let buffer = variable.attributes.first(where: { $0.name == "Buffer" || $0.name == "VertexBuffer" || $0.name == "TextureBuffer" }),
             let index = buffer.parameters.last(where: { $0.label == nil || $0.label == "vertexIndex" })?.expression
         else {
             return ""
+        }
+        if buffer.name == "TextureBuffer" {
+            let optional = variable.type.isOptional ? "?" : ""
+            return "try encoder.setVertexTexture(\(variable.identifier)\(optional).getTexture(for: device) , index: \(index))"
         }
         return "try encoder.setVertexBuffer(\(containerName(for: variable)).getBuffer(for: device), offset: 0, index: \(index))"
     }
