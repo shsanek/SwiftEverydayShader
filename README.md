@@ -102,6 +102,8 @@ At the moment there are several types of buffers that you can use in your shader
 
 `@VertexCount var count: Int` - Is not a buffer. it will be used when `drawPrimitives` method is called. conflicts with `VertexBuffer` and `IndexBuffer`. Supports only `Int`
 
+`@Texture(_ index:vertexIndex:fragmentIndex:) var texture: ITexture` - adds a texture object in the shader
+
 ## Function
 
 ### IFragmentFunction
