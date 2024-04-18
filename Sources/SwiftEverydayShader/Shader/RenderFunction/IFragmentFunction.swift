@@ -1,10 +1,7 @@
 import Metal
 
-public protocol IRootFragmentFunction {
+public protocol IFragmentFunction {
     func _prepareFragment(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws
-}
-
-public protocol IFragmentFunction: IRootFragmentFunction {
     func prepareFragment(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws
 }
 
@@ -16,3 +13,4 @@ public extension IFragmentFunction {
         try _prepareFragment(encoder: encoder, device: device)
     }
 }
+

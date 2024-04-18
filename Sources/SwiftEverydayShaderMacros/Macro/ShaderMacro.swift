@@ -12,8 +12,7 @@ public struct ShaderMacro: MemberMacro {
     enum ShaderType {
         static let vertex = "IVertexFunction"
         static let fragment = "IFragmentFunction"
-        static let rootVertex = "IRootVertexFunction"
-        static let rootFragment = "IRootFragmentFunction"
+        static let compute = "IComputeFunction"
     }
 
     public static func expansion(
@@ -42,8 +41,9 @@ public struct ShaderMacro: MemberMacro {
 
         let protocols = declaration.inheritanceClause?.inheritedTypes.map({ $0.type.description.removeSpace() }) ?? []
 
-        let isVertexShader = protocols.contains(where: { value in [ShaderType.rootVertex, ShaderType.vertex].contains(value) })
-        let isFragmentShader = protocols.contains(where: { value in [ShaderType.fragment, ShaderType.rootFragment].contains(value) })
+        let isVertexShader = protocols.contains(where: { value in [ShaderType.vertex].contains(value) })
+        let isFragmentShader = protocols.contains(where: { value in [ShaderType.fragment].contains(value) })
+        let isComputeShader = protocols.contains(where: { value in [ShaderType.compute].contains(value) })
 
 
         let containers = variables.filter({ $0.attributes.contains(where: { $0.name != "TextureBuffer" }) }).map({ makeBufferContainer($0) })
@@ -64,11 +64,14 @@ public struct ShaderMacro: MemberMacro {
             let components = try variables.map({ try vertexFunctionComponent($0) }).joined(separator: "\n")
 
             functions.append("""
-            var _readyForRendering: Bool {
+            public var _readyForRendering: Bool {
                 \(raw: try readyForRenderingVertexFunction(vertex: vertexBuffer.first, index: indexBuffer.first, counter: counter.first))
             }
-            func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+            public func _prepare(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
                 \(raw: components)
+            }
+
+            public func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
                 \(raw: try renderVertexFunction(vertex: vertexBuffer.first, index: indexBuffer.first, counter: counter.first))
             }
             """)
@@ -77,7 +80,16 @@ public struct ShaderMacro: MemberMacro {
         if isFragmentShader {
             let components = try variables.map({ try fragmentFunctionComponent($0) }).joined(separator: "\n")
             functions.append("""
-            func _prepareFragment(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
+            public func _prepareFragment(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
+                \(raw: components)
+            }
+            """)
+        }
+
+        if isComputeShader {
+            let components = try variables.map({ try computeFunctionComponent($0) }).joined(separator: "\n")
+            functions.append("""
+            public func _prepareCompute(encoder: MTLComputeCommandEncoder, device: MTLDevice) throws {
                 \(raw: components)
             }
             """)
@@ -88,10 +100,19 @@ public struct ShaderMacro: MemberMacro {
     }
 
     static func makeBufferContainer(_ variable: DeclarationVariable) -> DeclSyntax {
+        var initText = ".init()"
+        if let initializer = variable.initializer {
+            if variable.type.isArray {
+                initText = ".init(\(initializer))"
+            } else {
+                initText = ".init([\(initializer)])"
+            }
+        }
+
         if variable.isSharedContainer {
-            "public var \(raw: containerName(for: variable)): BufferContainer<\(raw: variable.type.type)> = .init(\(raw: variable.initializer ?? ""))"
+            return "public var \(raw: containerName(for: variable)): BufferContainer<\(raw: variable.type.type)> = \(raw: initText)"
         } else {
-            "private var \(raw: containerName(for: variable)): BufferContainer<\(raw: variable.type.type)> = .init(\(raw: variable.initializer ?? ""))"
+            return "private var \(raw: containerName(for: variable)): BufferContainer<\(raw: variable.type.type)> = \(raw: initText)"
         }
     }
 
@@ -111,6 +132,21 @@ public struct ShaderMacro: MemberMacro {
         }
         return "try encoder.setFragmentBuffer(\(containerName(for: variable)).getBuffer(for: device), offset: 0, index: \(index.expression))"
     }
+
+    static func computeFunctionComponent(_ variable: DeclarationVariable) throws -> String {
+        guard
+            let buffer = variable.attributes.first(where: { $0.name == "Buffer" || $0.name == "TextureBuffer" }),
+            let index = buffer.parameters.last(where: { $0.label == nil || $0.label == "fragmentIndex" })
+        else {
+            return ""
+        }
+        if buffer.name == "TextureBuffer" {
+            let optional = variable.type.isOptional ? "?" : ""
+            return "try encoder.setTexture(\(variable.identifier)\(optional).getTexture(for: device) , index: \(index.expression))"
+        }
+        return "try encoder.setBuffer(\(containerName(for: variable)).getBuffer(for: device), offset: 0, index: \(index.expression))"
+    }
+
 
     static func vertexFunctionComponent(_ variable: DeclarationVariable) throws -> String {
         guard

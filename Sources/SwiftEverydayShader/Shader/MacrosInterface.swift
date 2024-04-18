@@ -5,7 +5,15 @@ public macro Shader(mutable: Bool = false) = #externalMacro(
 )
 
 @attached(accessor, names: named(dict))
-public macro Buffer(_ index: Int32 = 0, vertexIndex: Int32 = 0, fragmentIndex: Int32 = 0, sharedContainer: Bool = false) = #externalMacro(
+public macro Buffer(
+    _ index: Int32 = 0,
+    vertexIndex: Int32 = 0,
+    fragmentIndex: Int32 = 0,
+    computeIndex: Int32 = 0,
+    computeCount: Bool = false, 
+    computeOut: Bool = true,
+    sharedContainer: Bool = false
+) = #externalMacro(
     module: "SwiftEverydayShaderMacros",
     type: "BufferMacro"
 )
@@ -35,7 +43,7 @@ public struct VertexCount {
 public struct TextureBuffer<Texture> {
     public var wrappedValue: Texture
 
-    public init(wrappedValue: Texture, _ index: Int32 = 0, vertexIndex: Int32 = 0, fragmentIndex: Int32 = 0) {
+    public init(wrappedValue: Texture, _ index: Int32 = 0, vertexIndex: Int32 = 0, fragmentIndex: Int32 = 0, computeIndex: Int32 = 0) {
         self.wrappedValue = wrappedValue
     }
 }
