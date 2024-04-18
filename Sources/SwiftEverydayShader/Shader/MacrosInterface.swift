@@ -30,3 +30,18 @@ public struct VertexCount {
         self.wrappedValue = wrappedValue
     }
 }
+
+@propertyWrapper
+public struct TextureBuffer<Texture> {
+    public var wrappedValue: Texture
+
+    public init(wrappedValue: Texture, _ index: Int32 = 0, vertexIndex: Int32 = 0, fragmentIndex: Int32 = 0) {
+        self.wrappedValue = wrappedValue
+    }
+}
+
+extension TextureBuffer where Texture: ExpressibleByNilLiteral {
+    public init(_ index: Int32 = 0, vertexIndex: Int32 = 0, fragmentIndex: Int32 = 0) {
+        self.wrappedValue = nil
+    }
+}

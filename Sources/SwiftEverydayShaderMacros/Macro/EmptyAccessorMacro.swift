@@ -10,7 +10,9 @@ public struct EmptyAccessorMacro: AccessorMacro {
         providingAccessorsOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [AccessorDeclSyntax] {
-        return ["didSet { }"]
+        return [
+            "didSet { assert(true); // for empty macro }"
+        ]
     }
 
     public init() { }
