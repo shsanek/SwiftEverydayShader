@@ -1,11 +1,11 @@
 @Shader
 struct Function: IVertexFunction, IFragmentFunction {
-    @VertexCount var count: Int = 0
+    @InputCount var count: Int = 0
     @Buffer(1) var index: [Int] = []
 }
 ---
 struct Function: IVertexFunction, IFragmentFunction {
-    @VertexCount var count: Int = 0
+    @InputCount var count: Int = 0
     var index: [Int] = [] {
         set {
             _indexBufferContainer.values = newValue

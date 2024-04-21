@@ -8,6 +8,7 @@ public macro Shader(mutable: Bool = false) = #externalMacro(
 public macro Buffer(
     _ index: Int32 = 0,
     vertexIndex: Int32 = 0,
+    vertexCount: Bool = false,
     fragmentIndex: Int32 = 0,
     computeIndex: Int32 = 0,
     computeCount: Bool = false, 
@@ -19,22 +20,16 @@ public macro Buffer(
 )
 
 @attached(accessor, names: named(dict))
-public macro VertexBuffer(_ index: Int32, fragmentIndex: Int32 = 0, sharedContainer: Bool = false) = #externalMacro(
-    module: "SwiftEverydayShaderMacros",
-    type: "BufferMacro"
-)
-
-@attached(accessor, names: named(dict))
 public macro IndexBuffer(sharedContainer: Bool = false) = #externalMacro(
     module: "SwiftEverydayShaderMacros",
     type: "BufferMacro"
 )
 
 @propertyWrapper
-public struct VertexCount {
+public struct InputCount {
     public var wrappedValue: Int
 
-    public init(wrappedValue: Int) {
+    public init(wrappedValue: Int = 0) {
         self.wrappedValue = wrappedValue
     }
 }

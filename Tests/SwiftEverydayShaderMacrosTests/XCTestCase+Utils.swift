@@ -55,7 +55,6 @@ extension XCTestCase {
             macros:[
                 "Shader": ShaderMacro.self,
                 "Buffer": BufferMacro.self,
-                "VertexBuffer": BufferMacro.self,
                 "IndexBuffer": BufferMacro.self,
             ],
             in: context
@@ -74,7 +73,7 @@ extension XCTestCase {
                 throw SwiftEverydayShaderError("Incorect line format")
             }
             if part[1] != result[i] {
-                SETAssert(self, url.path(), UInt32(line + 1), "!= '\(result[i])'")
+                SETAssert(self, url.path(), UInt32(line + 1), "'\(part[1])' != '\(result[i])'")
             }
         }
 

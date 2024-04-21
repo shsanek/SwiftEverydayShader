@@ -1,6 +1,6 @@
 @Shader
 final class SpriteVertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [VertexInputItem]
+    @Buffer(0, vertexCount: true) var items: [VertexInputItem]
     @IndexBuffer var count: [UInt32]
 }
 ---

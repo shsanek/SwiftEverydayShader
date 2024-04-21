@@ -50,7 +50,7 @@ struct Render2DInputItem: RawEncodable {
 ``` swift
 @Shader
 final class Render2DVertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [Render2DInputItem] = []
+    @Buffer(0, vertexCount: true) var items: [Render2DInputItem] = []
 }
 
 @Shader
@@ -58,7 +58,7 @@ final class Render2DFragmentFunction: IFragmentFunction {
     @Buffer(1) var items: [Int32] = []
 }
 ```
-`Note that index must correspond to index in Metal and VertexFunction must contain the field VertexBuffer or IndexBuffer or VertexCount.`
+`Note that index must correspond to index in Metal and VertexFunction must contain the field Buffer with vertexCount == true or IndexBuffer or InputCount.`
 
 3. Create a pipeline with your functions
 ```
@@ -94,13 +94,11 @@ Done!
 
 At the moment there are several types of buffers that you can use in your shader. Buffer macros can only be used in `@Shader` objects. For each buffer a private variable `_propertyNameBufferContainer: BufferContainer<T>` will be created. If you want to reuse the same buffer you can use `sharedContainer: true` then `_propertyNameBufferContainer` will be created as public 
 
-`@Buffer(_ index:vertexIndex:fragmentIndex:sharedContainer:) var name: [Value]` - Standard buffer can be used in both vertex and fragment shaders. You can use a joint index or specify the index separately for each function. If no index is specified at all, the buffer will be created but will not be used.
-
-`@VertexBuffer(_ index:fragmentIndex:sharedContainer:) var name: [Value]` - The vertex buffer can be reused in the fragment wizard by explicitly specifying `fragmentIndex`, in the absence of `IndexBuffer` or when `IndexBuffer` is `nil` it will be used to calculate `vertexCount` when `drawPrimitives` is called
+`@Buffer(_ index:vertexIndex:fragmentIndex:sharedContainer:) var name: [Value]` - Standard buffer can be used in both vertex and fragment shaders. You can use a joint index or specify the index separately for each function. If no index is specified at all, the buffer will be created but will not be used. If `vertexCount == true` - The vertex buffer can be reused in the fragment wizard by explicitly specifying `fragmentIndex`, in the absence of `IndexBuffer` or when `IndexBuffer` is `nil` it will be used to calculate `vertexCount` when `drawPrimitives` is called
 
 `@IndexBuffer(sharedContainer:) var name: [UInt32]` - The index buffer will be used in the vertex shader when `drawIndexedPrimitives` is called. available types [UInt32] or [UInt16]
 
-`@VertexCount var count: Int` - Is not a buffer. it will be used when `drawPrimitives` method is called. conflicts with `VertexBuffer` and `IndexBuffer`. Supports only `Int`
+`@InputCount var count: Int` - Is not a buffer. it will be used when `drawPrimitives` method is called. conflicts with `Buffer(vertexCount: true)` and `IndexBuffer`. Supports only `Int`
 
 `@Texture(_ index:vertexIndex:fragmentIndex:) var texture: ITexture` - adds a texture object in the shader
 
@@ -116,11 +114,11 @@ When using `@Shader` and declaring `IVertexFunction` protocol support, a `_ready
 
 The `@Shader` must contain one of the following combinations:
 
-##### Only `VertexBuffer`
+##### Only `Buffer(vertexCount: true)`
 ```
 @Shader
 struct MyFunction: IVertexFunction {
-@VertexBuffer(0) var vertex = [...]
+@Buffer(0, vertexCount: true) var vertex = [...]
 ...
 }
 ```
@@ -130,7 +128,7 @@ When rendering, the method `drawPrimitives` method will be called and the length
 ```
 @Shader
 struct MyFunction: IVertexFunction {
-@VertexBuffer(0) var vertex: ...
+@Buffer(0, vertexCount: true) var vertex: ...
 @IndexBuffer var index: [UInt32]
 ...
 }
@@ -145,11 +143,11 @@ struct MyFunction: IVertexFunction {
 ```
 in both cases the drawIndexedPrimitives method will be called where the index buffer will be passed in
 
-##### `IndexBuffer` optional and `VertexBuffer`
+##### `IndexBuffer` optional and `Buffer(vertexCount: true)`
 ```
 @Shader
 struct MyFunction: IVertexFunction {
-@VertexBuffer(0) var vertex: ...
+@Buffer(0, vertexCount: true) var vertex: ...
 @IndexBuffer var index: [UInt32]?
 ...
 }
@@ -157,11 +155,11 @@ struct MyFunction: IVertexFunction {
 if index is nil then Only `VertexBuffer` will be used otherwise `IndexBuffer` not null
 
 
-##### `VertexCount`
+##### `InputCount`
 ```
 @Shader
 struct MyFunction: IVertexFunction {
-@VertexCount var count: Int
+@InputCount var count: Int
 ...
 }
 ```

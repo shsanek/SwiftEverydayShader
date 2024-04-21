@@ -4,7 +4,7 @@ import Metal
 
 @Shader
 final class Render2DVertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [Render2DInputItem]
+    @Buffer(0, vertexCount: true) var items: [Render2DInputItem]
 }
 
 @Shader

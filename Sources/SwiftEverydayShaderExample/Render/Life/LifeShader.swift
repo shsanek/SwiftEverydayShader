@@ -6,7 +6,6 @@ import Metal
 final class LifeComputeFunction: IComputeFunction {
     @Buffer(0, sharedContainer: true) var new: [UInt8] = .init(repeating: .random(in: 0...1), count: 100 * 100)
     @Buffer(1) private var old: [UInt8] = .init(repeating: .random(in: 0...1), count: 100 * 100)
-
     @Buffer(2, sharedContainer: true) var size: vector_int2 = .init(100, 100)
 
     private func swipe() {
@@ -42,7 +41,7 @@ final class LifeComputeFunction: IComputeFunction {
 
 @Shader
 final class LifeVertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [TextureInputItem]
+    @Buffer(0, vertexCount: true) var items: [TextureInputItem]
 }
 
 @Shader

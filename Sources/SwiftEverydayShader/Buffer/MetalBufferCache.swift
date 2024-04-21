@@ -40,7 +40,7 @@ public class MetalBufferCache {
             length: length,
             options: [MTLResourceOptions.storageModeShared]
         ) else {
-            throw NSError(domain: #function, code: 1, userInfo: ["what": "can't create buffer"])
+            throw "can't create buffer"
         }
         self.cache = newBuff
         return newBuff

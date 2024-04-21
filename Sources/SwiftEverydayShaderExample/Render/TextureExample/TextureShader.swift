@@ -4,7 +4,7 @@ import Metal
 
 @Shader
 final class TextureVertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [TextureInputItem]
+    @Buffer(0, vertexCount: true) var items: [TextureInputItem]
 }
 
 @Shader
