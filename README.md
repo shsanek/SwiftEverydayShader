@@ -58,7 +58,7 @@ final class Render2DFragmentFunction: IFragmentFunction {
     @Buffer(1) var items: [Int32] = []
 }
 ```
-`Note that index must correspond to index in Metal and VertexFunction must contain the field Buffer with vertexCount == true or IndexBuffer or InputCount.`
+`Note that index must correspond to index in Metal and VertexFunction must contain the field Buffer with vertexCount == true or IndexBuffer or VertexCount.`
 
 3. Create a pipeline with your functions
 ```
@@ -98,7 +98,7 @@ At the moment there are several types of buffers that you can use in your shader
 
 `@IndexBuffer(sharedContainer:) var name: [UInt32]` - The index buffer will be used in the vertex shader when `drawIndexedPrimitives` is called. available types [UInt32] or [UInt16]
 
-`@InputCount var count: Int` - Is not a buffer. it will be used when `drawPrimitives` method is called. conflicts with `Buffer(vertexCount: true)` and `IndexBuffer`. Supports only `Int`
+`@VertexCount var count: Int` - Is not a buffer. it will be used when `drawPrimitives` method is called. conflicts with `Buffer(vertexCount: true)` and `IndexBuffer`. Supports only `Int`
 
 `@Texture(_ index:vertexIndex:fragmentIndex:) var texture: ITexture` - adds a texture object in the shader
 
@@ -155,11 +155,11 @@ struct MyFunction: IVertexFunction {
 if index is nil then Only `VertexBuffer` will be used otherwise `IndexBuffer` not null
 
 
-##### `InputCount`
+##### `VertexCount`
 ```
 @Shader
 struct MyFunction: IVertexFunction {
-@InputCount var count: Int
+@VertexCount var count: Int
 ...
 }
 ```

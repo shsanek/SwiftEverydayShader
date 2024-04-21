@@ -1,10 +1,10 @@
 @Shader
 final class VertexFunction: IVertexFunction {
-    @InputCount var count: Int = 0
+    @VertexCount var count: Int = 0
 }
 ---
 final class VertexFunction: IVertexFunction {
-    @InputCount var count: Int = 0
+    @VertexCount var count: Int = 0
     var _readyForRendering: Bool {
         return count > 0
     }

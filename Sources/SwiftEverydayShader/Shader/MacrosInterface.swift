@@ -26,10 +26,20 @@ public macro IndexBuffer(sharedContainer: Bool = false) = #externalMacro(
 )
 
 @propertyWrapper
-public struct InputCount {
+public struct VertexCount {
     public var wrappedValue: Int
 
     public init(wrappedValue: Int = 0) {
+        self.wrappedValue = wrappedValue
+    }
+}
+
+
+@propertyWrapper
+public struct ComputeCount<ValueType: IComputeCount> {
+    public var wrappedValue: ValueType
+
+    public init(wrappedValue: ValueType) {
         self.wrappedValue = wrappedValue
     }
 }

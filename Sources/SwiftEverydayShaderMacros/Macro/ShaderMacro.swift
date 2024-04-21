@@ -35,7 +35,7 @@ public struct ShaderMacro: MemberMacro {
 
         let counter = allVariables.filter({
             $0.attributes.contains {
-                $0.name == "InputCount"
+                $0.name == "VertexCount"
             }
         })
 
@@ -59,7 +59,7 @@ public struct ShaderMacro: MemberMacro {
                 (vertexBuffer.count + indexBuffer.count == 0 && counter.count == 1)
             else
             {
-                throw SwiftEverydayShaderError("For vertex function it is necessary to add `Buffer(vertexCount: true)` or IndexBuffer in quantity not more than one of each kind or one InputCount")
+                throw SwiftEverydayShaderError("For vertex function it is necessary to add `Buffer(vertexCount: true)` or IndexBuffer in quantity not more than one of each kind or one VertexCount")
             }
             let components = try variables.map({ try vertexFunctionComponent($0) }).joined(separator: "\n")
 
@@ -210,25 +210,6 @@ public struct ShaderMacro: MemberMacro {
         guard counter == nil || (counter?.type.type == "Int" && counter?.type.isArray == false) else {
             throw SwiftEverydayShaderError("count must be of type Int")
         }
-        let indexString = { (index: DeclarationVariable) in
-            var type = "uint32"
-            if index.type.type == "UInt32" && index.type.isArray {
-                type = "uint32"
-            } else if index.type.type == "UInt16" && index.type.isArray {
-                type = "uint16"
-            } else {
-                throw SwiftEverydayShaderError("index must be of type [UInt16] or [UInt32]")
-            }
-            return """
-            encoder.drawIndexedPrimitives(
-                type: primitive,
-                indexCount: \(index.identifier).count,
-                indexType: .\(type),
-                indexBuffer: try \(containerName(for: index)).getBuffer(for: device).noOptional(),
-                indexBufferOffset: 0
-            )
-            """
-        }
         if let array {
             guard array.type.isArray else {
                 throw SwiftEverydayShaderError("vertex must be of type Array")
@@ -241,7 +222,7 @@ public struct ShaderMacro: MemberMacro {
             encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: \(counter.identifier))
             """
         } else {
-            throw SwiftEverydayShaderError("For compute function it is necessary to add `Buffer(vertexCount: true)` or ShaderInputCount in quantity not more than one of each kind")
+            throw SwiftEverydayShaderError("For compute function it is necessary to add `Buffer(vertexCount: true)` or ShaderVertexCount in quantity not more than one of each kind")
         }
     }
 
