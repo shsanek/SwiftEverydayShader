@@ -19,8 +19,10 @@ final class SpriteVertexFunction: IVertexFunction {
     var _readyForRendering: Bool {
         return count.count > 0
     }
-    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+    func _prepareVertex(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
+    }
 
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
         encoder.drawIndexedPrimitives(
             type: primitive,
             indexCount: count.count,

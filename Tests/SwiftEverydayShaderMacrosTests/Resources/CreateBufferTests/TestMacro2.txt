@@ -13,6 +13,6 @@ struct Function {
         }
     }
 
-    private var _indexBufferContainer: BufferContainer<Int> = .init(Self.index)
+    private var _indexBufferContainer: BufferContainer<Int> = .init([Self.index])
 }
 

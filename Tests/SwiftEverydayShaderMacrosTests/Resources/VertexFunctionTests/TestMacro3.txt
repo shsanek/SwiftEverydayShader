@@ -8,6 +8,9 @@ final class VertexFunction: IVertexFunction {
     var _readyForRendering: Bool {
         return count > 0
     }
+    func _prepareVertex(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
+    }
+
     func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
         encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: count)
     }

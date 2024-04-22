@@ -22,4 +22,5 @@ extension SIMD2: RawEncodable { }
 extension SIMD3: RawEncodable { }
 extension SIMD4: RawEncodable { }
 extension simd_float4x4: RawEncodable { }
-extension UInt32: RawEncodable{ }
+extension UInt32: RawEncodable { }
+extension UInt8: RawEncodable { }

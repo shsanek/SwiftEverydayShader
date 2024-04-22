@@ -1,6 +1,6 @@
 @Shader
 final class SpriteVertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [VertexInputItem]
+    @Buffer(0, vertexCount: true) var items: [VertexInputItem]
     @IndexBuffer var count: [UInt32]?
 }
 ---
@@ -39,9 +39,11 @@ final class SpriteVertexFunction: IVertexFunction {
         }
         return true
     }
-    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+    func _prepareVertex(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
         try encoder.setVertexBuffer(_itemsBufferContainer.getBuffer(for: device), offset: 0, index: 0)
+    }
 
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
         if let count {
             encoder.drawIndexedPrimitives(
                 type: primitive,

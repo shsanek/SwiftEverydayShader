@@ -1,6 +1,6 @@
 @Shader
 final class VertexFunction: IVertexFunction {
-    @VertexBuffer(0) var items: [VertexItem]
+    @Buffer(0, vertexCount: true) var items: [VertexItem]
 }
 ---
 final class VertexFunction: IVertexFunction {
@@ -18,8 +18,11 @@ final class VertexFunction: IVertexFunction {
     var _readyForRendering: Bool {
         return items.count > 0
     }
-    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+    func _prepareVertex(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
         try encoder.setVertexBuffer(_itemsBufferContainer.getBuffer(for: device), offset: 0, index: 0)
+    }
+
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
         encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: items.count)
     }
 }
