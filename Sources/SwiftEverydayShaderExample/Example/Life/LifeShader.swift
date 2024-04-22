@@ -9,6 +9,7 @@ final class LifeComputeFunction: IComputeFunction {
     @Buffer(2, computeCount: true, sharedContainer: true) var size: vector_int2 = .init(100, 100)
 
     func prepareCompute(encoder: MTLComputeCommandEncoder, device: MTLDevice) throws {
+        swipe()
         try _prepareCompute(encoder: encoder, device: device)
     }
 

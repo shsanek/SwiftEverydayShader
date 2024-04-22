@@ -16,11 +16,15 @@ class BaseExample {
 
 protocol IExample {
     var name: String { get }
+    func updateSize(size: vector_int2, queue: IRenderQueue) throws
+    func updateSize(size: vector_float2, queue: IRenderQueue) throws
     func loop(size: vector_float2, queue: IRenderQueue) throws
     func load(size: vector_float2, queue: IRenderQueue) throws
 }
 
 extension IExample {
+    func updateSize(size: vector_int2, queue: IRenderQueue) throws { }
+    func updateSize(size: vector_float2, queue: IRenderQueue) throws { }
     func loop(size: vector_float2, queue: IRenderQueue) throws { }
     func load(size: vector_float2, queue: IRenderQueue) throws { }
 }

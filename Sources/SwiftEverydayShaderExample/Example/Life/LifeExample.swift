@@ -20,14 +20,14 @@ final class LifeExample: BaseExample, IExample {
         computePipeline = try .init(computeDescriptor: .load("lifeComputeShader", bundle: .module, function: computeFunction))
     }
 
+    func updateSize(size: vector_int2, queue: IRenderQueue) throws {
+        computeFunction.update(.init(Int32(size.x / 2), Int32(size.y / 2)))
+    }
+
     func loop(size: vector_float2, queue: IRenderQueue) throws {
-        if Int32(size.x / 2) != computeFunction.size.x || Int32(size.y / 2) != computeFunction.size.y {
-            computeFunction.update(.init(Int32(size.x / 2), Int32(size.y / 2)))
-        }
         if let computePipeline {
             try ComputeExecutor.global?.run(computePipeline)
         }
-
         if let renderPipeline {
             fragmentFunction._itemsBufferContainer = computeFunction._newBufferContainer
             pipelines = [renderPipeline]
