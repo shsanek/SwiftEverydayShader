@@ -20,8 +20,11 @@ struct Function: IVertexFunction, IFragmentFunction {
     var _readyForRendering: Bool {
         return count > 0
     }
-    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
+    func _prepareVertex(encoder: MTLRenderCommandEncoder, device: MTLDevice) throws {
         try encoder.setVertexBuffer(_indexBufferContainer.getBuffer(for: device), offset: 0, index: 1)
+    }
+
+    func _render(encoder: MTLRenderCommandEncoder, device: MTLDevice, primitive: MTLPrimitiveType) throws {
         encoder.drawPrimitives(type: primitive, vertexStart: 0, vertexCount: count)
     }
 

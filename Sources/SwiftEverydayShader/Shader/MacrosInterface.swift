@@ -12,7 +12,6 @@ public macro Buffer(
     fragmentIndex: Int32 = 0,
     computeIndex: Int32 = 0,
     computeCount: Bool = false, 
-    computeOut: Bool = true,
     sharedContainer: Bool = false
 ) = #externalMacro(
     module: "SwiftEverydayShaderMacros",
@@ -36,7 +35,7 @@ public struct VertexCount {
 
 
 @propertyWrapper
-public struct ComputeCount<ValueType: IComputeCount> {
+public struct ComputeCount<ValueType> {
     public var wrappedValue: ValueType
 
     public init(wrappedValue: ValueType) {
